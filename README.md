@@ -71,13 +71,13 @@ cargo run --release
 ## Dependencies
 
 
- `ratatui`   ->  Terminal UI framework 
- `crossterm` -> Cross-platform terminal input/output 
- `aes-gcm`   ->   AES-256-GCM authenticated encryption 
- `argon2`    -> Argon2id password hashing / key derivation 
- `serde`     -> Serialization of vault data 
- `zeroize`   -> Securely wipe secrets from memory 
- `dirs`      -> Cross-platform data directory paths 
+`ratatui`   ->  Terminal UI framework
+`crossterm` -> Cross-platform terminal input/output
+`aes-gcm`   ->   AES-256-GCM authenticated encryption
+`argon2`    -> Argon2id password hashing / key derivation
+`serde`     -> Serialization of vault data
+`zeroize`   -> Securely wipe secrets from memory
+`dirs`      -> Cross-platform data directory paths
 
 ---
 
@@ -105,24 +105,24 @@ Each entry inside additionally has its own `field_salt` and per-field nonces —
 ## Usage
 
 ### Keybindings
------------------------------------------------------------
-| Screen         | Key       | Action                     |
-|                |           |                            |
-| **Login**      | `Enter`   | Unlock / create vault      |
-| **Login**      | `Esc`     | Quit                       |
-| **Browse**     | `↑ ↓`     | Navigate entries           |
-| **Browse**     | `Enter`   | View entry details         |
-| **Browse**     | `A`       | Add new entry              |
-| **Browse**     | `Esc`     | Quit                       |
-| **View**       | `Space`   | Toggle password visibility |
-| **View**       | `→`       | Edit entry                 |
-| **View**       | `↑ ↓`     | Navigate entries           |
-| **View**       | `Esc`     | Back to list               |
-| **Edit / Add** | `Tab`     | Switch field               |
-| **Edit / Add** | `Enter`   | Save                       |
-| **Edit / Add** | `Esc`     | Cancel                     |
------------------------------------------------------------ 
----
+
+ Screen            Key        Action                     
+                                                     
+**Login**      - `Enter`   - Unlock / create vault
+**Login**      - `Esc`     - Quit
+**Browse**     - `↑ ↓`     - Navigate entries
+**Browse**     - `Enter`   - View entry detail
+**Browse**     - `A`       - Add new entry
+**Browse**     - `Esc`     - Quit
+**View**       - `Space`   - Toggle password visibility
+**View**       - `→`       - Edit entry
+**View**       - `↑ ↓`     - Navigate entries
+**View**       - `Esc`     - Back to list
+**Edit / Add** - `Tab`     - Switch field
+**Edit / Add** - `Enter`   - Save
+**Edit / Add** - `Esc`     - Cancel
+
+
 
 ## Security
 
