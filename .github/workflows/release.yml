@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     strategy:
-      fail-fast: false    # don't cancel other builds if one fails
+      fail-fast: false
       matrix:
         include:
           - os: ubuntu-latest
@@ -17,15 +17,13 @@ jobs:
           - os: windows-latest
             target: x86_64-pc-windows-msvc
             artifact: statelock-windows.exe
-          - os: macos-latest
-            target: x86_64-apple-darwin
-            artifact: statelock-macos
 
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
 
     steps:
       - uses: actions/checkout@v4
+
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
@@ -33,8 +31,8 @@ jobs:
       - name: Build
         run: cargo build --release --target ${{ matrix.target }}
 
-      - name: Rename binary (Unix)
-        if: matrix.os != 'windows-latest'
+      - name: Rename binary (Linux)
+        if: matrix.os == 'ubuntu-latest'
         run: cp target/${{ matrix.target }}/release/state ${{ matrix.artifact }}
 
       - name: Rename binary (Windows)
