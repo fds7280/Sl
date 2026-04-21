@@ -23,11 +23,10 @@ No Rust or build tools needed — just download and run.
 
 |  Linux   | [statelock-linux](https://github.com/fds7280/Sl/releases/latest/download/statelock-linux) 
 |  Windows | [statelock-windows.exe](https://github.com/fds7280/Sl/releases/latest/download/statelock-windows.exe)
-|  macOS   | [statelock-macos](https://github.com/fds7280/Sl/releases/latest/download/statelock-macos)
 
 Or go to the [Releases page](https://github.com/fds7280/Sl/releases) and grab the latest version.
 
-### Linux / macOS — make it executable after download
+### Linux-> make it executable after download
 ```bash
 chmod +x statelock-linux
 ./statelock-linux
@@ -87,9 +86,8 @@ cargo run --release
 Your encrypted vault is stored at:
 
 
-| Linux   | `~/.local/share/statelock/vault.sl` 
-| Windows | `C:\Users\<name>\AppData\Roaming\statelock\vault.sl` 
-| macOS   | `~/Library/Application Support/statelock/vault.sl` 
+Linux   ->  `~/.local/share/statelock/vault.sl` 
+Windows -> `C:\Users\<name>\AppData\Roaming\statelock\vault.sl` 
 
 The vault file is a custom binary format:
 
