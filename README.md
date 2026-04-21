@@ -21,8 +21,8 @@
 No Rust or build tools needed — just download and run.
 
 ```
-|  Linux   | [statelock-linux] https://github.com/fds7280/Sl/releases/latest/download/statelock-linux 
-|  Windows | [statelock-windows.exe] https://github.com/fds7280/Sl/releases/latest/download/statelock-windows.exe
+|  Linux   | [statelock-linux]       |https://github.com/fds7280/Sl/releases/latest/download/statelock-linux 
+|  Windows | [statelock-windows.exe] | https://github.com/fds7280/Sl/releases/latest/download/statelock-windows.exe
 ```
 
 Or go to the [Releases page](https://github.com/fds7280/Sl/releases) and grab the latest version.
