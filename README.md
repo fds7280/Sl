@@ -20,9 +20,10 @@
 
 No Rust or build tools needed — just download and run.
 
-
+```
 |  Linux   | [statelock-linux](https://github.com/fds7280/Sl/releases/latest/download/statelock-linux) 
 |  Windows | [statelock-windows.exe](https://github.com/fds7280/Sl/releases/latest/download/statelock-windows.exe)
+```
 
 Or go to the [Releases page](https://github.com/fds7280/Sl/releases) and grab the latest version.
 
@@ -85,10 +86,10 @@ cargo run --release
 
 Your encrypted vault is stored at:
 
-
+```bash
 Linux   ->  `~/.local/share/statelock/vault.sl` 
 Windows -> `C:\Users\<name>\AppData\Roaming\statelock\vault.sl` 
-
+```
 The vault file is a custom binary format:
 
 ```
@@ -108,19 +109,19 @@ Each entry inside additionally has its own `field_salt` and per-field nonces —
 ```bash
  Screen            Key        Action                     
                                                      
-**Login**      - `Enter`   - Unlock / create vault
-**Login**      - `Esc`     - Quit
-**Browse**     - `↑ ↓`     - Navigate entries
-**Browse**     - `Enter`   - View entry detail
-**Browse**     - `A`       - Add new entry
-**Browse**     - `Esc`     - Quit
-**View**       - `Space`   - Toggle password visibility
-**View**       - `→`       - Edit entry
-**View**       - `↑ ↓`     - Navigate entries
-**View**       - `Esc`     - Back to list
-**Edit / Add** - `Tab`     - Switch field
-**Edit / Add** - `Enter`   - Save
-**Edit / Add** - `Esc`     - Cancel
+Login      - Enter   - Unlock / create vault
+Login      - Esc     - Quit
+Browse     - ↑ ↓     - Navigate entries
+Browse     - Enter   - View entry detail
+Browse     - A       - Add new entry
+Browse     - Esc     - Quit
+View       - Space   - Toggle password visibility
+View       - →       - Edit entry
+View       - ↑ ↓     - Navigate entries
+View       - Esc     - Back to list
+Edit / Add - Tab     - Switch field
+Edit / Add - Enter   - Save
+Edit / Add - Esc     - Cancel
 ```
 
 
