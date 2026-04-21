@@ -1,0 +1,1 @@
+{"rustc":7458672600737419911,"features":"","declared_features":"","target":0,"profile":0,"path":0,"deps":[[14156459146412379794,"build_script_build",false,3116283682042234700]],"local":[{"RerunIfEnvChanged":{"var":"WINAPI_NO_BUNDLED_LIBRARIES","val":null}}],"rustflags":["-C","target-feature=+crt-static","-C","link-arg=-lwinpthread"],"config":0,"compile_kind":0}
