@@ -105,7 +105,7 @@ Each entry inside additionally has its own `field_salt` and per-field nonces —
 ## Usage
 
 ### Keybindings
-
+```bash
  Screen            Key        Action                     
                                                      
 **Login**      - `Enter`   - Unlock / create vault
@@ -121,7 +121,7 @@ Each entry inside additionally has its own `field_salt` and per-field nonces —
 **Edit / Add** - `Tab`     - Switch field
 **Edit / Add** - `Enter`   - Save
 **Edit / Add** - `Esc`     - Cancel
-
+```
 
 
 ## Security
