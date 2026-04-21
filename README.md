@@ -72,13 +72,13 @@ cargo run --release
 ## Dependencies
 
 
-`ratatui`   ->  Terminal UI framework
-`crossterm` -> Cross-platform terminal input/output
-`aes-gcm`   ->   AES-256-GCM authenticated encryption
-`argon2`    -> Argon2id password hashing / key derivation
-`serde`     -> Serialization of vault data
-`zeroize`   -> Securely wipe secrets from memory
-`dirs`      -> Cross-platform data directory paths
+- ratatui`   ->  Terminal UI framework
+- crossterm` -> Cross-platform terminal input/output
+- aes-gcm`   ->   AES-256-GCM authenticated encryption
+- argon2`    -> Argon2id password hashing / key derivation
+- serde`     -> Serialization of vault data
+- zeroize`   -> Securely wipe secrets from memory
+- dirs`      -> Cross-platform data directory paths
 
 ---
 
