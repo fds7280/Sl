@@ -1,7 +1,0 @@
-cat > /home/jt/jtp/Sl/.gitignore << 'EOF'
-target/
-vault.sl
-*.sl
-*.tmp
-.cargo/
-EOF
