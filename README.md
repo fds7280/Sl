@@ -50,6 +50,8 @@ Just double click `statelock-windows.exe` or run it in PowerShell:
 - **Atomic writes** — crash-safe save via temp file + rename
 - **Memory safety** — master password and keys zeroized after use
 - **Owner-only file permissions** — `0o600` on Unix
+- **Strong password generator** — 32-char, 94-symbol charset, rejection-sampled (no modulo bias)
+- **Clipboard auto-clear** — copied password wiped after 30 seconds
 - **Full TUI** — keyboard driven, no mouse needed
 
 ---
@@ -72,13 +74,14 @@ cargo run --release
 ## Dependencies
 
 
-- ratatui`   ->  Terminal UI framework
-- crossterm` -> Cross-platform terminal input/output
-- aes-gcm`   ->   AES-256-GCM authenticated encryption
-- argon2`    -> Argon2id password hashing / key derivation
-- serde`     -> Serialization of vault data
-- zeroize`   -> Securely wipe secrets from memory
-- dirs`      -> Cross-platform data directory paths
+- `ratatui`   — Terminal UI framework
+- `crossterm` — Cross-platform terminal input/output
+- `aes-gcm`   — AES-256-GCM authenticated encryption
+- `argon2`    — Argon2id password hashing / key derivation
+- `arboard`   — Cross-platform clipboard (X11/Wayland/Windows/macOS)
+- `serde`     — Serialization of vault data
+- `zeroize`   — Securely wipe secrets from memory
+- `dirs`      — Cross-platform data directory paths
 
 ---
 
@@ -106,22 +109,30 @@ Each entry inside additionally has its own `field_salt` and per-field nonces —
 ## Usage
 
 ### Keybindings
-```bash
- Screen            Key        Action                     
-                                                     
-Login      - Enter   - Unlock / create vault
-Login      - Esc     - Quit
-Browse     - ↑ ↓     - Navigate entries
-Browse     - Enter   - View entry detail
-Browse     - A       - Add new entry
-Browse     - Esc     - Quit
-View       - Space   - Toggle password visibility
-View       - →       - Edit entry
-View       - ↑ ↓     - Navigate entries
-View       - Esc     - Back to list
-Edit / Add - Tab     - Switch field
-Edit / Add - Enter   - Save
-Edit / Add - Esc     - Cancel
+```
+ Screen        Key       Action
+─────────────────────────────────────────────────
+ Login         Enter     Unlock / create vault
+ Login         Esc       Quit
+ Browse        ↑ ↓       Navigate entries
+ Browse        Enter     View entry detail
+ Browse        A         Add new entry
+ Browse        Esc       Quit
+ View          Space     Toggle password visibility
+ View          C         Copy password to clipboard
+ View          →         Edit entry
+ View          ↑ ↓       Navigate entries
+ View          Esc       Back to list
+ Add           Tab       Switch field
+ Add           G         Generate password (when on Password field)
+ Add           Space     Toggle password visibility (when on Password field)
+ Add           Enter     Save entry
+ Add           Esc       Cancel
+ Edit          Tab       Switch field
+ Edit          G         Generate password
+ Edit          Space     Toggle password visibility (when on Password field)
+ Edit          Enter     Save entry
+ Edit          Esc       Cancel
 ```
 
 
@@ -134,5 +145,3 @@ Edit / Add - Esc     - Cancel
 - Each entry is encrypted with its own independently derived key
 
 ---
-
-
