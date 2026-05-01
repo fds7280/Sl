@@ -72,6 +72,40 @@ pub fn save_vault(
     Ok(())
 }
 
+// ── Save (key-based, no Argon2id) ─────────────────────────────────────────
+/// Like save_vault but accepts a pre-derived key directly.
+/// Used by SessionCache so Argon2id never runs during a live session.
+pub fn save_vault_with_key(
+    vault: &Vault,
+    key: &[u8; 32],
+    vault_salt: &[u8; SALT_LEN],
+    path: &str,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let json      = serde_json::to_vec(vault)?;
+    let cipher    = Aes256Gcm::new(Key::<Aes256Gcm>::from_slice(key));
+    let nonce     = Aes256Gcm::generate_nonce(&mut OsRng);
+    let ciphertext = cipher
+        .encrypt(&nonce, json.as_slice())
+        .map_err(|e| format!("vault encryption failed: {e}"))?;
+
+    let mut file_bytes = Vec::new();
+    file_bytes.extend_from_slice(SL_MAGIC);
+    file_bytes.extend_from_slice(vault_salt);
+    file_bytes.extend_from_slice(&nonce);
+    file_bytes.extend_from_slice(&ciphertext);
+
+    let tmp_path = format!("{}.tmp", path);
+    fs::write(&tmp_path, &file_bytes)?;
+    fs::rename(&tmp_path, path)?;
+
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        fs::set_permissions(path, fs::Permissions::from_mode(0o600))?;
+    }
+    Ok(())
+}
+
 // ── Load ───────────────────────────────────────────────────────────────────
 pub fn load_vault(
     master_pass: &str,

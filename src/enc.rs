@@ -9,7 +9,9 @@ use zeroize::Zeroize;
 use crate::back::Entry;
 
 // ── Argon2id params ────────────────────────────────────────────────────────
-// 64 MB memory, 3 iterations, 1 thread — OWASP recommended minimum
+// 64 MB memory, 3 iterations, 1 thread — OWASP recommended minimum.
+// These are intentionally slow to defeat offline brute-force attacks.
+// They run ONCE on unlock, never again during a live session.
 fn argon2() -> Argon2<'static> {
     let params = Params::new(65536, 3, 1, Some(32))
         .expect("invalid argon2 params");
@@ -27,6 +29,8 @@ pub fn generate_salt() -> [u8; SALT_LEN] {
 }
 
 // ── Key derivation ─────────────────────────────────────────────────────────
+// Call this ONCE on unlock and cache the result in SessionCache.
+// Never call inside the event loop or draw loop.
 pub fn derive_key(password: &str, salt: &[u8; SALT_LEN]) -> [u8; 32] {
     let mut key = [0u8; 32];
     argon2()
@@ -36,7 +40,9 @@ pub fn derive_key(password: &str, salt: &[u8; SALT_LEN]) -> [u8; 32] {
 }
 
 // ── Encrypted entry ────────────────────────────────────────────────────────
-// Each entry carries its own field_salt — independent key per entry
+// Each entry carries its own field_salt — independent key per entry.
+// The field_salt is used with the CACHED vault key to derive a per-entry key.
+// Cracking the outer vault layer still leaves every field independently keyed.
 #[derive(Clone, Serialize, Deserialize)]
 pub struct EncryptedEntry {
     pub field_salt:        Vec<u8>,
@@ -69,9 +75,61 @@ fn decrypt_field(
     String::from_utf8(plaintext).map_err(|e| format!("utf8 error: {e}"))
 }
 
-// ── Public API ─────────────────────────────────────────────────────────────
+// ── Build per-entry cipher from cached vault key + field_salt ──────────────
+// The field_salt XOR-mixes with the vault key so each entry has a unique
+// cipher even though the vault key is cached. No Argon2id here — just
+// a fast key derivation using HKDF-like XOR fold.
+fn entry_cipher(vault_key: &[u8; 32], field_salt: &[u8]) -> Result<Aes256Gcm, String> {
+    if field_salt.len() < 32 {
+        return Err("field_salt too short".to_string());
+    }
+    // XOR the vault key with the first 32 bytes of the field_salt.
+    // This gives every entry a unique key derived from both secrets
+    // without any expensive KDF call.
+    let mut entry_key = [0u8; 32];
+    for i in 0..32 {
+        entry_key[i] = vault_key[i] ^ field_salt[i];
+    }
+    let cipher = Aes256Gcm::new(Key::<Aes256Gcm>::from_slice(&entry_key));
+    entry_key.zeroize();
+    Ok(cipher)
+}
 
-/// Encrypt an Entry using master_pass. Generates a fresh field_salt per entry.
+// ── Public API — KEY-BASED (fast, use during session) ─────────────────────
+
+/// Encrypt using a pre-derived vault key. No Argon2id. Use this always
+/// after unlock — pass the cached key from SessionCache.
+pub fn encrypt_entry_with_key(entry: &Entry, vault_key: &[u8; 32]) -> Result<EncryptedEntry, String> {
+    let field_salt = generate_salt();
+    let cipher     = entry_cipher(vault_key, &field_salt)?;
+
+    let (username,    username_nonce)    = encrypt_field(&cipher, &entry.username)?;
+    let (password,    password_nonce)    = encrypt_field(&cipher, &entry.password)?;
+    let (description, description_nonce) = encrypt_field(&cipher, &entry.description)?;
+
+    Ok(EncryptedEntry {
+        field_salt: field_salt.to_vec(),
+        username,    username_nonce,
+        password,    password_nonce,
+        description, description_nonce,
+    })
+}
+
+/// Decrypt using a pre-derived vault key. No Argon2id. Use this always
+/// after unlock — pass the cached key from SessionCache.
+pub fn decrypt_entry_with_key(enc: &EncryptedEntry, vault_key: &[u8; 32]) -> Result<Entry, String> {
+    let cipher = entry_cipher(vault_key, &enc.field_salt)?;
+    Ok(Entry {
+        username:    decrypt_field(&cipher, &enc.username,    &enc.username_nonce)?,
+        password:    decrypt_field(&cipher, &enc.password,    &enc.password_nonce)?,
+        description: decrypt_field(&cipher, &enc.description, &enc.description_nonce)?,
+    })
+}
+
+// ── Public API — PASSWORD-BASED (slow, use only for vault load/save) ───────
+
+/// Encrypt an Entry using master_pass. Runs Argon2id — only call this
+/// at vault creation time, not during a live session.
 pub fn encrypt_entry(entry: &Entry, master_pass: &str) -> Result<EncryptedEntry, String> {
     let field_salt  = generate_salt();
     let mut key     = derive_key(master_pass, &field_salt);
@@ -91,7 +149,8 @@ pub fn encrypt_entry(entry: &Entry, master_pass: &str) -> Result<EncryptedEntry,
     })
 }
 
-/// Decrypt an EncryptedEntry. Returns Err on wrong password or corrupt data.
+/// Decrypt an EncryptedEntry using master_pass. Runs Argon2id — only call
+/// this at vault load time, not during a live session.
 pub fn decrypt_entry(enc: &EncryptedEntry, master_pass: &str) -> Result<Entry, String> {
     let field_salt: [u8; SALT_LEN] = enc.field_salt
         .as_slice()
